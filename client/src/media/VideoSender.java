@@ -12,38 +12,26 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.Base64;
 
-/**
- * Capture webcam Sarxos 0.3.12 avec partage inter-processus via fichier temp.
- *
- * PROBLÈME : deux JVM séparées ne partagent pas les variables static.
- * SOLUTION  : la JVM qui réussit à ouvrir la webcam écrit chaque frame
- *             dans un fichier tmp (webcam_frame.jpg). La JVM qui échoue
- *             lit ce fichier à la place → les deux voient la même image.
- *
- * Fichier partagé : System.getProperty("java.io.tmpdir") + /wacam_frame.jpg
- */
 public class VideoSender {
 
     private static final int    LARGEUR   = 640;
     private static final int    HAUTEUR   = 480;
     private static final int    FPS       = 15;
     private static final int    DELAI_MS  = 1000 / FPS;
-    // Fichier partagé entre les deux JVM
     private static final File   FRAME_FILE =
             new File(System.getProperty("java.io.tmpdir"), "webcam_frame.jpg");
-    // Fichier verrou : présent = une JVM a la webcam
     private static final File   LOCK_FILE  =
             new File(System.getProperty("java.io.tmpdir"), "webcam_lock.tmp");
 
     private final Client client;
     private final String destinataire;
     private final JLabel previewLocal;
-    private final TypeMessage typeVideo; // VIDEO ou GROUP_VIDEO
+    private final TypeMessage typeVideo;
 
     private volatile boolean actif = false;
     private Thread thread;
     private Object webcamRef = null;
-    private boolean proprietaire = false; // true = cette JVM a ouvert la webcam
+    private boolean proprietaire = false;
 
     public VideoSender(Client client, String destinataire) {
         this(client, destinataire, TypeMessage.VIDEO, null);
@@ -53,7 +41,6 @@ public class VideoSender {
         this(client, destinataire, TypeMessage.VIDEO, previewLocal);
     }
 
-    /** Constructeur complet : permet de spécifier le type (VIDEO ou GROUP_VIDEO). */
     public VideoSender(Client client, String destinataire, TypeMessage typeVideo, JLabel previewLocal) {
         this.client       = client;
         this.destinataire = destinataire;
@@ -77,27 +64,26 @@ public class VideoSender {
             fermerWebcam();
             LOCK_FILE.delete();
             proprietaire = false;
+            if (FRAME_FILE.exists()) {
+                FRAME_FILE.delete();
+                System.out.println("[Video] Fichier partagé supprimé.");
+            }
         }
         if (thread != null) thread.interrupt();
         System.out.println("[Video] Sender arrêté.");
     }
 
-    // ── Boucle principale ──────────────────────────────────────
-
     private void boucle() {
-        // Essayer d'ouvrir la vraie webcam
         if (essayerOuvrirWebcam()) {
             proprietaire = true;
             System.out.println("[Video] Mode PROPRIÉTAIRE (écrit les frames).");
             boucleProprio();
         } else {
-            // Une autre JVM a la webcam → lire le fichier partagé
             System.out.println("[Video] Mode LECTEUR (lit les frames du fichier partagé).");
             boucleLecteur();
         }
     }
 
-    // ── Mode propriétaire : capture + écriture fichier ─────────
 
     private void boucleProprio() {
         int erreurs = 0;
@@ -108,11 +94,8 @@ public class VideoSender {
                 if (img != null) {
                     erreurs = 0;
                     BufferedImage rgb = toRGB(img);
-                    // Écrire dans le fichier partagé
                     ecrireFichier(rgb);
-                    // Afficher localement
                     afficherLocal(rgb);
-                    // Envoyer au destinataire
                     envoyer(toJpeg(rgb));
                 } else {
                     if (++erreurs > 10) break;
@@ -129,14 +112,10 @@ public class VideoSender {
         fermerWebcam();
         LOCK_FILE.delete();
         proprietaire = false;
-        // Si toujours actif mais webcam perdue → basculer en image statique
         if (actif) boucleImageStatique();
     }
 
-    // ── Mode lecteur : lit le fichier partagé ──────────────────
-
     private void boucleLecteur() {
-        // Attendre que le fichier existe (max 3s)
         int attente = 0;
         while (!FRAME_FILE.exists() && attente < 30 && actif) {
             try { Thread.sleep(100); } catch (InterruptedException e) {
@@ -159,7 +138,6 @@ public class VideoSender {
                     // Afficher localement depuis le fichier
                     BufferedImage img = ImageIO.read(new ByteArrayInputStream(jpeg));
                     if (img != null) afficherLocal(img);
-                    // Envoyer au destinataire
                     envoyer(jpeg);
                 }
                 sleep(t);
@@ -171,8 +149,6 @@ public class VideoSender {
             }
         }
     }
-
-    // ── Image statique (ni webcam ni fichier partagé) ──────────
 
     private void boucleImageStatique() {
         System.out.println("[Video] Fallback → image statique.");
@@ -190,8 +166,6 @@ public class VideoSender {
             }
         }
     }
-
-    // ── Sarxos 0.3.12 ─────────────────────────────────────────
 
     private boolean essayerOuvrirWebcam() {
         // Si le fichier verrou existe → une autre JVM a déjà la webcam
@@ -223,7 +197,6 @@ public class VideoSender {
             }
 
             webcamRef = webcam;
-            // Créer le fichier verrou
             LOCK_FILE.createNewFile();
             System.out.println("[Video] ✅ Webcam ouverte (Sarxos 0.3.12).");
             return true;
@@ -255,20 +228,16 @@ public class VideoSender {
         }
     }
 
-    // ── Fichier partagé inter-JVM ──────────────────────────────
-
     private void ecrireFichier(BufferedImage img) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(img, "jpg", baos);
-            // Écriture atomique via fichier temporaire puis rename
             File tmp = new File(FRAME_FILE.getParent(), "webcam_frame_tmp.jpg");
             Files.write(tmp.toPath(), baos.toByteArray(),
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             Files.move(tmp.toPath(), FRAME_FILE.toPath(),
                     StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (Exception e) {
-            // Fallback sans atomic move
             try {
                 ImageIO.write(img, "jpg", FRAME_FILE);
             } catch (Exception ignored) {}

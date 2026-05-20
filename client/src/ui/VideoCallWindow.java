@@ -11,14 +11,6 @@ import model.TypeMessage;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Fenêtre d'appel vidéo — layout corrigé.
- *
- * CORRECTIONS :
- *  - GridLayout(1,2) strict : exactement 2 zones égales, pas de divider parasite
- *  - JLabel sans taille fixe : s'adapte à la taille de la fenêtre
- *  - Labels créés AVANT demarrerMedia() pour que VideoSender les reçoive
- */
 public class VideoCallWindow extends JFrame {
 
     private JLabel  labelVideoLocal;
@@ -45,14 +37,17 @@ public class VideoCallWindow extends JFrame {
 
     // ── API réseau ─────────────────────────────────────────────
 
+    // ✅ Méthode correcte appelée par Client.java
     public void afficherFrameDistante(Message msg) {
         if (videoReceiver != null) videoReceiver.recevoirFrame(msg);
     }
 
+    // ✅ Méthode correcte appelée par Client.java
     public void jouerAudioDistant(Message msg) {
         if (audioReceiver != null) audioReceiver.recevoirChunk(msg);
     }
 
+    // ✅ Méthode correcte appelée par Client.java
     public void terminerAppelExterieur() {
         if (termine) return;
         termine = true;
@@ -90,18 +85,16 @@ public class VideoCallWindow extends JFrame {
         statut.setBorder(BorderFactory.createEmptyBorder(10, 0, 8, 0));
         root.add(statut, BorderLayout.NORTH);
 
-        // Zone vidéos : GridLayout(1,2) — exactement 2 cellules égales
+        // Zone vidéos
         JPanel zoneVideos = new JPanel(new GridLayout(1, 2, 6, 0));
         zoneVideos.setBackground(new Color(18, 18, 18));
         zoneVideos.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
 
-        // Créer les labels AVANT demarrerMedia()
         labelVideoDistant = creerLabelVideo("En attente vidéo...");
         labelVideoLocal   = creerLabelVideo("Chargement caméra...");
 
         zoneVideos.add(creerPanneauVideo(labelVideoDistant, interlocuteur));
-        zoneVideos.add(creerPanneauVideo(labelVideoLocal,
-                client.getNomUtilisateur() + " (vous)"));
+        zoneVideos.add(creerPanneauVideo(labelVideoLocal, client.getNomUtilisateur() + " (vous)"));
 
         root.add(zoneVideos,     BorderLayout.CENTER);
         root.add(creerBoutons(), BorderLayout.SOUTH);
@@ -120,7 +113,6 @@ public class VideoCallWindow extends JFrame {
                 SwingConstants.CENTER);
         lbl.setBackground(Color.BLACK);
         lbl.setOpaque(true);
-        // PAS de setPreferredSize → BorderLayout.CENTER remplit tout l'espace
         return lbl;
     }
 
