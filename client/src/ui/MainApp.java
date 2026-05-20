@@ -31,7 +31,8 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) {
         fenetrePrincipale = stage;
-        stage.setTitle("Messagerie ENSA Tétouan");
+        stage.setTitle("WhatsApp");
+        stage.setMaximized(true);
         changerScene("login.fxml");
         stage.setOnCloseRequest(e -> {
             client.deconnecter();
