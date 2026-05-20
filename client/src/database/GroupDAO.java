@@ -8,24 +8,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Gestion locale des groupes WhatsApp en MySQL.
- *
- * Filtre par "proprietaire" pour isoler les groupes de chaque utilisateur.
- *
- * Différence SQLite → MySQL :
- *   SQLite : INSERT OR REPLACE → MySQL : INSERT ... ON DUPLICATE KEY UPDATE
- */
 public class GroupDAO {
 
-    /** Crée ou met à jour un groupe dans la base locale. */
     public static void sauvegarderOuMettreAJour(String nomGroupe, List<String> membres) {
         String moi = LocalDatabase.getUtilisateurCourant();
         if (moi == null) return;
-
         String membresCSV = String.join(",", membres);
-
-        // INSERT ... ON DUPLICATE KEY UPDATE remplace le "INSERT OR REPLACE" SQLite
         String sql = "INSERT INTO groupes(proprietaire, nom, membres) VALUES(?, ?, ?) "
                 + "ON DUPLICATE KEY UPDATE membres = VALUES(membres)";
         try (Connection c = LocalDatabase.getConnexion();
@@ -39,11 +27,9 @@ public class GroupDAO {
         }
     }
 
-    /** Supprime un groupe de la base locale. */
     public static void supprimer(String nomGroupe) {
         String moi = LocalDatabase.getUtilisateurCourant();
         if (moi == null) return;
-
         String sql = "DELETE FROM groupes WHERE proprietaire = ? AND nom = ?";
         try (Connection c = LocalDatabase.getConnexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -55,12 +41,10 @@ public class GroupDAO {
         }
     }
 
-    /** Liste tous les groupes de l'utilisateur connecté (propriétaire OU membre). */
     public static List<String[]> listerGroupes() {
         String moi = LocalDatabase.getUtilisateurCourant();
         List<String[]> result = new ArrayList<>();
         if (moi == null) return result;
-
         String sql = "SELECT DISTINCT nom, membres FROM groupes WHERE proprietaire = ? OR FIND_IN_SET(?, membres) > 0 ORDER BY nom";
         try (Connection c = LocalDatabase.getConnexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -80,11 +64,9 @@ public class GroupDAO {
         return result;
     }
 
-    /** Récupère les membres d'un groupe. */
     public static List<String> getMembres(String nomGroupe) {
         String moi = LocalDatabase.getUtilisateurCourant();
         if (moi == null) return new ArrayList<>();
-
         String sql = "SELECT membres FROM groupes WHERE proprietaire = ? AND nom = ?";
         try (Connection c = LocalDatabase.getConnexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -103,32 +85,36 @@ public class GroupDAO {
         return new ArrayList<>();
     }
 
-    /** Sauvegarde un message de groupe dans l'historique local. */
+    // ✅ Modifié : supporte le type (MESSAGE, VOICE_MESSAGE, FILE)
     public static void sauvegarderMessage(String groupe, String expediteur, String contenu) {
+        sauvegarderMessageAvecType(groupe, expediteur, contenu, "MESSAGE");
+    }
+
+    // ✅ Nouvelle surcharge avec type explicite
+    public static void sauvegarderMessageAvecType(String groupe, String expediteur, String contenu, String type) {
         String moi = LocalDatabase.getUtilisateurCourant();
         if (moi == null) return;
-
-        String sql = "INSERT INTO messages_groupe(proprietaire, groupe, expediteur, contenu) "
-                + "VALUES(?, ?, ?, ?)";
+        String sql = "INSERT INTO messages_groupe(proprietaire, groupe, expediteur, contenu, type) "
+                + "VALUES(?, ?, ?, ?, ?)";
         try (Connection c = LocalDatabase.getConnexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, moi);
             ps.setString(2, groupe);
             ps.setString(3, expediteur);
             ps.setString(4, contenu);
+            ps.setString(5, type);
             ps.executeUpdate();
         } catch (SQLException e) {
             System.err.println("[DB] Erreur sauvegarde message groupe : " + e.getMessage());
         }
     }
 
-    /** Retourne l'historique des messages d'un groupe. */
+    // ✅ Modifié : retourne aussi le type pour afficher vocal/fichier correctement
     public static List<String[]> historique(String groupe) {
         String moi = LocalDatabase.getUtilisateurCourant();
         List<String[]> result = new ArrayList<>();
         if (moi == null) return result;
-
-        String sql = "SELECT expediteur, contenu, date_envoi "
+        String sql = "SELECT expediteur, contenu, date_envoi, type "
                 + "FROM messages_groupe "
                 + "WHERE proprietaire = ? AND groupe = ? "
                 + "ORDER BY id ASC";
@@ -138,10 +124,12 @@ public class GroupDAO {
             ps.setString(2, groupe);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    String type = rs.getString("type");
                     result.add(new String[]{
                             rs.getString("expediteur"),
                             rs.getString("contenu"),
-                            rs.getString("date_envoi")
+                            rs.getString("date_envoi"),
+                            type != null ? type : "MESSAGE"  // ✅ index [3] = type
                     });
                 }
             }
@@ -150,4 +138,4 @@ public class GroupDAO {
         }
         return result;
     }
-}//howa hada
+}

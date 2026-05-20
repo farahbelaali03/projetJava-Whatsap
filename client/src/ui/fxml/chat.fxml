@@ -3,29 +3,30 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <HBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="ui.ChatController"
       prefWidth="1000" prefHeight="640"
-      style="-fx-background-color: #111B21;">
+      style="-fx-background-color: #FFFFFF;">
 
     <!-- ═══ SIDEBAR GAUCHE ═══════════════════════════════════════ -->
     <VBox prefWidth="320" maxWidth="320"
-          style="-fx-background-color: #111B21;">
+          style="-fx-background-color: #FFFFFF;">
 
         <!-- En-tête -->
         <HBox alignment="CENTER_LEFT" spacing="8"
-              style="-fx-background-color: #202C33;">
+              style="-fx-background-color: #008069;">
             <padding>
                 <Insets top="12" right="16" bottom="12" left="16"/>
             </padding>
             <Label text="WhatsApp"
-                   style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#E9EDEF;"/>
+                   style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#FFFFFF;"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Label fx:id="labelNomUtilisateur"
-                   style="-fx-text-fill:#25D366; -fx-font-size:13px;"/>
+                   style="-fx-text-fill:#D9FDD3; -fx-font-size:13px;"/>
             <Button text="⏻" onAction="#seDeconnecter"
-                    style="-fx-background-color:transparent; -fx-text-fill:#8696A0;
+                    style="-fx-background-color:transparent; -fx-text-fill:#FFFFFF;
                            -fx-font-size:16px; -fx-cursor:hand;">
                 <tooltip><Tooltip text="Se déconnecter"/></tooltip>
             </Button>
@@ -34,32 +35,40 @@
         <!-- Onglets Contacts / Groupes -->
         <TabPane fx:id="tabPane" VBox.vgrow="ALWAYS"
                  tabClosingPolicy="UNAVAILABLE"
-                 style="-fx-background-color:#111B21; -fx-tab-min-width:130px;">
+                 style="-fx-background-color:#FFFFFF; -fx-tab-min-width:130px;">
 
             <!-- ── Onglet CONTACTS ── -->
             <Tab text="💬 Contacts">
-                <VBox style="-fx-background-color:#111B21;">
+                <VBox style="-fx-background-color:#FFFFFF;">
+                    <!-- Barre de recherche -->
+                    <HBox style="-fx-background-color:#FFFFFF; -fx-padding:8px 10px;">
+                        <TextField promptText="🔍 Rechercher..."
+                                   style="-fx-background-color:#F0F2F5; -fx-text-fill:#111B21;
+                                          -fx-prompt-text-fill:#8696A0; -fx-background-radius:10px;
+                                          -fx-padding:8px 12px; -fx-font-size:12px;"
+                                   maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
                     <Label text="CONTACTS"
                            style="-fx-font-size:11px; -fx-font-weight:bold;
                                   -fx-text-fill:#8696A0; -fx-padding:8px 16px 4px 16px;"/>
                     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                                style="-fx-background-color:#111B21; -fx-background:#111B21;">
+                                style="-fx-background-color:#FFFFFF; -fx-background:#FFFFFF;">
                         <VBox fx:id="listeContacts"
-                              style="-fx-background-color:#111B21;"/>
+                              style="-fx-background-color:#FFFFFF;"/>
                     </ScrollPane>
                 </VBox>
             </Tab>
 
             <!-- ── Onglet GROUPES ── -->
             <Tab text="👥 Groupes">
-                <VBox style="-fx-background-color:#111B21;">
+                <VBox style="-fx-background-color:#FFFFFF;">
                     <Label text="GROUPES"
                            style="-fx-font-size:11px; -fx-font-weight:bold;
                                   -fx-text-fill:#8696A0; -fx-padding:8px 16px 4px 16px;"/>
                     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                                style="-fx-background-color:#111B21; -fx-background:#111B21;">
+                                style="-fx-background-color:#FFFFFF; -fx-background:#FFFFFF;">
                         <VBox fx:id="listeGroupes"
-                              style="-fx-background-color:#111B21;"/>
+                              style="-fx-background-color:#FFFFFF;"/>
                     </ScrollPane>
                 </VBox>
             </Tab>
@@ -67,11 +76,11 @@
     </VBox>
 
     <!-- ═══ ZONE PRINCIPALE DROITE ═══════════════════════════════ -->
-    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: #0B141A;">
+    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: #EFEAE4;">
 
         <!-- En-tête conversation -->
         <HBox alignment="CENTER_LEFT" spacing="12"
-              style="-fx-background-color:#202C33;">
+              style="-fx-background-color:#F0F2F5;">
             <padding>
                 <Insets top="10" right="16" bottom="10" left="16"/>
             </padding>
@@ -79,87 +88,128 @@
             <VBox spacing="2">
                 <Label fx:id="labelContactActif"
                        text="Sélectionnez un contact ou un groupe"
-                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#E9EDEF;"/>
+                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#111B21;"/>
                 <Label fx:id="labelStatutContact" text=""
-                       style="-fx-font-size:12px; -fx-text-fill:#8696A0;"/>
+                       style="-fx-font-size:12px; -fx-text-fill:#667781;"/>
                 <Label fx:id="labelGroupeActif" text=""
-                       style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#E9EDEF;"/>
+                       style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#111B21;"/>
                 <Label fx:id="labelMembresGroupe" text=""
-                       style="-fx-font-size:11px; -fx-text-fill:#8696A0;"/>
+                       style="-fx-font-size:11px; -fx-text-fill:#667781;"/>
             </VBox>
 
             <Pane HBox.hgrow="ALWAYS"/>
 
-            <!-- Bouton Appel Audio -->
-            <Button fx:id="boutonAppelAudio"
-                    text="📞 Appel audio"
-                    onAction="#lancerAppelAudio"
-                    disable="true"
-                    style="-fx-background-color:transparent; -fx-text-fill:#8696A0;
-                           -fx-font-size:12px; -fx-cursor:hand;">
-                <tooltip><Tooltip text="Démarrer un appel audio"/></tooltip>
-            </Button>
-
             <!-- Bouton Appel Vidéo -->
             <Button fx:id="boutonAppelVideo"
-                    text="📹 Appel vidéo"
                     onAction="#lancerAppelVideo"
                     disable="true"
-                    style="-fx-background-color:transparent; -fx-text-fill:#8696A0;
-                           -fx-font-size:12px; -fx-cursor:hand;">
-                <tooltip><Tooltip text="Démarrer un appel vidéo"/></tooltip>
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:40px; -fx-min-height:40px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-video" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Appel vidéo"/></tooltip>
+            </Button>
+
+            <!-- Bouton Appel Audio -->
+            <Button fx:id="boutonAppelAudio"
+                    onAction="#lancerAppelAudio"
+                    disable="true"
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:40px; -fx-min-height:40px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-phone-alt" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Appel audio"/></tooltip>
+            </Button>
+
+            <!-- Bouton Réunion Vidéo Groupe -->
+            <Button fx:id="boutonReunionVideo"
+                    onAction="#lancerReunionVideoGroupe"
+                    visible="false" managed="false"
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:40px; -fx-min-height:40px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-video" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Réunion vidéo de groupe"/></tooltip>
             </Button>
 
             <!-- Bouton Réunion groupe -->
-            <Button text="🎙 Réunion"
+            <Button fx:id="boutonReunion"
                     onAction="#lancerReunionGroupe"
-                    style="-fx-background-color:transparent; -fx-text-fill:#8696A0;
-                           -fx-font-size:12px; -fx-cursor:hand;">
-                <tooltip><Tooltip text="Démarrer une réunion de groupe"/></tooltip>
+                    visible="false" managed="false"
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:40px; -fx-min-height:40px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-phone-alt" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Réunion de groupe"/></tooltip>
             </Button>
         </HBox>
+
+        <!-- Barre info -->
+        <Label fx:id="labelInfo" text="" visible="false" managed="false"
+               style="-fx-text-fill:#111B21; -fx-font-size:12px;
+                      -fx-background-color:#FFF3CD; -fx-background-radius:0px;
+                      -fx-padding:6px 16px; -fx-alignment:center;"
+               maxWidth="Infinity"/>
 
         <!-- Zone messages privés -->
         <ScrollPane fx:id="scrollMessages" fitToWidth="true"
                     VBox.vgrow="ALWAYS"
-                    style="-fx-background-color:#0B141A; -fx-background:#0B141A;">
+                    style="-fx-background-color:#EFEAE4; -fx-background:#EFEAE4;">
             <VBox fx:id="zoneMessages" spacing="4"
-                  style="-fx-background-color:#0B141A;">
+                  style="-fx-background-color:#EFEAE4;">
                 <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
             </VBox>
         </ScrollPane>
 
-        <!-- Zone messages groupe (masquée par défaut) -->
+        <!-- Zone messages groupe -->
         <ScrollPane fx:id="scrollMessagesGroupe" fitToWidth="true"
                     managed="false" visible="false"
                     VBox.vgrow="ALWAYS"
-                    style="-fx-background-color:#0B141A; -fx-background:#0B141A;">
+                    style="-fx-background-color:#EFEAE4; -fx-background:#EFEAE4;">
             <VBox fx:id="zoneMessagesGroupe" spacing="4"
-                  style="-fx-background-color:#0B141A;">
+                  style="-fx-background-color:#EFEAE4;">
                 <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
             </VBox>
         </ScrollPane>
 
         <!-- Barre de saisie (chat privé) -->
         <HBox alignment="CENTER" spacing="8"
-              style="-fx-background-color:#202C33;">
+              style="-fx-background-color:#F0F2F5;">
             <padding><Insets top="8" right="12" bottom="8" left="12"/></padding>
 
-            <Button fx:id="boutonFichier" text="📎" onAction="#envoyerFichier"
+            <Button fx:id="boutonFichier" onAction="#envoyerFichier"
                     disable="true"
-                    style="-fx-background-color:transparent; -fx-font-size:18px; -fx-cursor:hand;">
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:36px; -fx-min-height:36px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-paperclip" iconSize="20" iconColor="#54656F"/>
+                </graphic>
                 <tooltip><Tooltip text="Envoyer un fichier"/></tooltip>
+            </Button>
+
+            <Button fx:id="boutonVocal" onAction="#enregistrerVocal"
+                    disable="true"
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:36px; -fx-min-height:36px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-microphone" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Message vocal"/></tooltip>
             </Button>
 
             <TextField fx:id="champMessage" promptText="Saisir un message..."
                        HBox.hgrow="ALWAYS" disable="true"
-                       style="-fx-background-color:#2A3942; -fx-text-fill:#E9EDEF;
-                              -fx-prompt-text-fill:#667781; -fx-background-radius:10px;
+                       style="-fx-background-color:#FFFFFF; -fx-text-fill:#111B21;
+                              -fx-prompt-text-fill:#8696A0; -fx-background-radius:10px;
                               -fx-padding:9px 14px; -fx-font-size:13px;"/>
 
             <Button fx:id="boutonEnvoyer" text="➤" onAction="#envoyerMessage"
                     disable="true"
-                    style="-fx-background-color:#25D366; -fx-text-fill:white;
+                    style="-fx-background-color:#00A884; -fx-text-fill:white;
                            -fx-font-size:14px; -fx-background-radius:20px;
                            -fx-min-width:40px; -fx-min-height:40px; -fx-cursor:hand;"/>
         </HBox>
@@ -167,18 +217,36 @@
         <!-- Barre de saisie (groupe) -->
         <HBox alignment="CENTER" spacing="8"
               managed="false" visible="false"
-              style="-fx-background-color:#1A2630;">
+              style="-fx-background-color:#F0F2F5;">
             <padding><Insets top="8" right="12" bottom="8" left="12"/></padding>
+
+            <Button fx:id="boutonFichierGroupe" onAction="#envoyerFichierGroupe"
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:36px; -fx-min-height:36px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-paperclip" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Envoyer un fichier au groupe"/></tooltip>
+            </Button>
+
+            <Button fx:id="boutonVocalGroupe" onAction="#enregistrerVocalGroupe"
+                    style="-fx-background-color:transparent; -fx-cursor:hand;
+                           -fx-min-width:36px; -fx-min-height:36px;">
+                <graphic>
+                    <FontIcon iconLiteral="fas-microphone" iconSize="20" iconColor="#54656F"/>
+                </graphic>
+                <tooltip><Tooltip text="Message vocal au groupe"/></tooltip>
+            </Button>
 
             <TextField fx:id="champMessageGroupe"
                        promptText="Message au groupe..."
                        HBox.hgrow="ALWAYS"
-                       style="-fx-background-color:#2A3942; -fx-text-fill:#E9EDEF;
-                              -fx-prompt-text-fill:#667781; -fx-background-radius:10px;
+                       style="-fx-background-color:#FFFFFF; -fx-text-fill:#111B21;
+                              -fx-prompt-text-fill:#8696A0; -fx-background-radius:10px;
                               -fx-padding:9px 14px; -fx-font-size:13px;"/>
 
             <Button text="➤" onAction="#envoyerMessageGroupe"
-                    style="-fx-background-color:#7B2D8B; -fx-text-fill:white;
+                    style="-fx-background-color:#00A884; -fx-text-fill:white;
                            -fx-font-size:14px; -fx-background-radius:20px;
                            -fx-min-width:40px; -fx-min-height:40px; -fx-cursor:hand;"/>
         </HBox>

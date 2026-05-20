@@ -6,56 +6,56 @@
 
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:controller="ui.LoginController"
-           style="-fx-background-color: #111B21;"
+           style="-fx-background-color: #FFFFFF;"
            prefWidth="480" prefHeight="600">
 
     <VBox alignment="CENTER_LEFT"
           maxWidth="380"
           spacing="12"
-          style="-fx-background-color: #202C33; -fx-background-radius: 16px;">
+          style="-fx-background-color: #FFFFFF; -fx-background-radius: 18px;">
         <padding>
             <Insets top="32.0" right="32.0" bottom="32.0" left="32.0"/>
         </padding>
 
         <Label text="💬 WhatsApp"
-               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #25D366;"/>
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #00A884;"/>
 
         <Label text="Connectez-vous pour commencer"
-               style="-fx-font-size: 13px; -fx-text-fill: #8696A0;"/>
+               style="-fx-font-size: 13px; -fx-text-fill: #667781;"/>
 
         <Region prefHeight="6"/>
 
         <Label text="NOM D'UTILISATEUR"
-               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #8696A0;"/>
+               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #667781;"/>
         <TextField fx:id="champNomUtilisateur"
                    promptText="Votre nom..."
-                   style="-fx-background-color:#2A3942; -fx-text-fill:#E9EDEF;
-        -fx-prompt-text-fill:#667781; -fx-background-radius:8px;
+                   style="-fx-background-color:#F0F2F5; -fx-text-fill:#111B21;
+        -fx-prompt-text-fill:#8696A0; -fx-background-radius:8px;
                           -fx-padding:10px 13px; -fx-font-size:13px;"/>
 
         <Label text="MOT DE PASSE"
-               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #8696A0;"/>
+               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #667781;"/>
         <PasswordField fx:id="champMotDePasse"
                        promptText="Votre mot de passe..."
-                       style="-fx-background-color:#2A3942; -fx-text-fill:#E9EDEF;
-        -fx-prompt-text-fill:#667781; -fx-background-radius:8px;
+                       style="-fx-background-color:#F0F2F5; -fx-text-fill:#111B21;
+        -fx-prompt-text-fill:#8696A0; -fx-background-radius:8px;
                               -fx-padding:10px 13px; -fx-font-size:13px;"/>
 
         <HBox spacing="8">
             <VBox spacing="4" HBox.hgrow="ALWAYS">
                 <Label text="ADRESSE IP DU SERVEUR"
-                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #8696A0;"/>
+                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #667781;"/>
                 <TextField fx:id="champIp"
                            text="localhost"
-                           style="-fx-background-color:#2A3942; -fx-text-fill:#E9EDEF;
+                           style="-fx-background-color:#F0F2F5; -fx-text-fill:#111B21;
             -fx-background-radius:8px; -fx-padding:8px 12px; -fx-font-size:12px;"/>
             </VBox>
             <VBox spacing="4">
                 <Label text="PORT"
-                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #8696A0;"/>
+                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #667781;"/>
                 <TextField fx:id="champPort"
                            text="5000" prefWidth="80"
-                           style="-fx-background-color:#2A3942; -fx-text-fill:#E9EDEF;
+                           style="-fx-background-color:#F0F2F5; -fx-text-fill:#111B21;
             -fx-background-radius:8px; -fx-padding:8px 12px; -fx-font-size:12px;"/>
             </VBox>
         </HBox>
@@ -64,8 +64,8 @@
                 text="Se connecter"
                 maxWidth="Infinity"
                 onAction="#seConnecter"
-                style="-fx-background-color:#25D366; -fx-text-fill:black;
-        -fx-font-size:15px; -fx-font-weight:bold;
+                style="-fx-background-color:#00A884; -fx-text-fill:white;
+        -fx-font-size:14px; -fx-font-weight:bold;
                        -fx-background-radius:10px; -fx-padding:12px; -fx-cursor:hand;"/>
 
         <ProgressIndicator fx:id="indicateurChargement"
@@ -79,7 +79,7 @@
                visible="false"/>
 
         <Label text="ⓘ  Le compte est créé automatiquement à la 1ère connexion"
-               style="-fx-text-fill: #667781; -fx-font-size: 10px;"
+               style="-fx-text-fill: #8696A0; -fx-font-size: 10px;"
                wrapText="true"/>
     </VBox>
 </StackPane>
