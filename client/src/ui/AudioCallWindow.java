@@ -9,10 +9,7 @@ import model.TypeMessage;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Fenêtre d'appel AUDIO uniquement (sans vidéo).
- * Utilise AUDIO_ONLY / AUDIO_CALL_END pour ne pas interférer avec les appels vidéo.
- */
+
 public class AudioCallWindow extends JFrame {
 
     private JLabel   labelStatut;
@@ -28,7 +25,7 @@ public class AudioCallWindow extends JFrame {
     private boolean       muet    = false;
     private boolean       termine = false;
 
-    // Chronomètre
+
     private Timer swingTimer;
     private int   secondes = 0;
 
@@ -40,13 +37,13 @@ public class AudioCallWindow extends JFrame {
         demarrerChrono();
     }
 
-    // ── Appelé par Client lors de la réception d'un AUDIO_ONLY ──
+
 
     public void jouerAudio(Message msg) {
         if (audioReceiver != null) audioReceiver.recevoirChunk(msg);
     }
 
-    /** Appelé quand l'autre raccroche (AUDIO_CALL_END reçu). */
+
     public void terminerAppelExterieur() {
         if (termine) return;
         termine = true;
@@ -62,7 +59,7 @@ public class AudioCallWindow extends JFrame {
         });
     }
 
-    // ── UI ──────────────────────────────────────────────────────
+
 
     private void initialiserUI() {
         setTitle("Appel audio avec " + interlocuteur);
@@ -79,7 +76,7 @@ public class AudioCallWindow extends JFrame {
         centre.setBackground(new Color(18, 18, 18));
         centre.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
-        // Avatar
+
         JLabel avatar = new JLabel(initiales(interlocuteur), SwingConstants.CENTER);
         avatar.setFont(new Font("Arial", Font.BOLD, 28));
         avatar.setForeground(Color.WHITE);
@@ -140,6 +137,8 @@ public class AudioCallWindow extends JFrame {
         });
 
         setVisible(true);
+        toFront();
+        requestFocus();
     }
 
     private JPanel creerBoutons() {
@@ -167,13 +166,17 @@ public class AudioCallWindow extends JFrame {
         return p;
     }
 
-    // ── Logique ─────────────────────────────────────────────────
 
     private void demarrerMedia() {
-        audioSender   = new AudioSender(client, interlocuteur, TypeMessage.AUDIO_ONLY);
-        audioReceiver = new AudioReceiver();
-        audioSender.demarrer();
-        audioReceiver.demarrer();
+        try {
+            audioSender   = new AudioSender(client, interlocuteur, TypeMessage.AUDIO_ONLY);
+            audioReceiver = new AudioReceiver();
+            audioSender.demarrer();
+            audioReceiver.demarrer();
+        } catch (Exception e) {
+            System.err.println("[AudioCallWindow] ERREUR demarrerMedia : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void arreterMedia() {
