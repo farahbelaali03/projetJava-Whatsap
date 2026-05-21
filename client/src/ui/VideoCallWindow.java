@@ -11,14 +11,6 @@ import model.TypeMessage;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Fenêtre d'appel vidéo — layout corrigé.
- *
- * CORRECTIONS :
- *  - GridLayout(1,2) strict : exactement 2 zones égales, pas de divider parasite
- *  - JLabel sans taille fixe : s'adapte à la taille de la fenêtre
- *  - Labels créés AVANT demarrerMedia() pour que VideoSender les reçoive
- */
 public class VideoCallWindow extends JFrame {
 
     private JLabel  labelVideoLocal;
@@ -43,7 +35,7 @@ public class VideoCallWindow extends JFrame {
         demarrerMedia();
     }
 
-    // ── API réseau ─────────────────────────────────────────────
+    //  API réseau
 
     public void afficherFrameDistante(Message msg) {
         if (videoReceiver != null) videoReceiver.recevoirFrame(msg);
@@ -67,7 +59,7 @@ public class VideoCallWindow extends JFrame {
         });
     }
 
-    // ── Construction UI ────────────────────────────────────────
+    //  Construction UI
 
     private void initialiserUI() {
         setTitle("Appel vidéo avec " + interlocuteur);
@@ -167,7 +159,7 @@ public class VideoCallWindow extends JFrame {
         return p;
     }
 
-    // ── Logique ────────────────────────────────────────────────
+    // Logique
 
     private void demarrerMedia() {
         videoSender   = new VideoSender(client, interlocuteur, labelVideoLocal);

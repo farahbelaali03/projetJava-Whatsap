@@ -11,18 +11,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Fenêtre de RÉUNION DE GROUPE (audio uniquement).
- *
- * Différences avec AudioCallWindow (appel 1-à-1) :
- *  - Le flux audio est envoyé avec GROUP_AUDIO vers le groupe (pas un utilisateur)
- *  - Affiche la liste des participants présents
- *  - Raccroche avec GROUP_CALL_END
- *  - Peut recevoir des flux de plusieurs personnes simultanément
- */
 public class GroupAudioCallWindow extends JFrame {
 
-    // ── UI ─────────────────────────────────────────────────────
+    // UI
     private JLabel   labelStatut;
     private JLabel   labelTimer;
     private JButton  boutonMute;
@@ -31,11 +22,11 @@ public class GroupAudioCallWindow extends JFrame {
     private DefaultListModel<String> modelParticipants;
     private JList<String>            listeParticipants;
 
-    // ── Média ──────────────────────────────────────────────────
+    //  Média
     private AudioSender   audioSender;
     private AudioReceiver audioReceiver;
 
-    // ── État ───────────────────────────────────────────────────
+    // État
     private final Client client;
     private final String nomGroupe;
     private boolean      muet    = false;
@@ -58,14 +49,14 @@ public class GroupAudioCallWindow extends JFrame {
         demarrerChrono();
     }
 
-    // ── API appelée par Client ──────────────────────────────────
+    //  API appelée par Client
 
-    /** Reçoit un chunk audio d'un participant du groupe. */
+
     public void jouerAudio(Message msg) {
         if (audioReceiver != null) audioReceiver.recevoirChunk(msg);
     }
 
-    /** Appelé quand un nouveau participant rejoint. */
+
     public void membreRejoint(String nomMembre) {
         if (!participants.contains(nomMembre)) {
             participants.add(nomMembre);
@@ -73,7 +64,7 @@ public class GroupAudioCallWindow extends JFrame {
         SwingUtilities.invokeLater(this::actualiserListeParticipants);
     }
 
-    /** Appelé quand un participant quitte la réunion. */
+
     public void membreParti(String nomMembre) {
         participants.remove(nomMembre);
         SwingUtilities.invokeLater(() -> {
@@ -82,7 +73,7 @@ public class GroupAudioCallWindow extends JFrame {
         });
     }
 
-    /** Appelé si le groupe est dissous depuis l'extérieur. */
+
     public void terminerReunionExterieure() {
         if (termine) return;
         termine = true;
@@ -98,7 +89,7 @@ public class GroupAudioCallWindow extends JFrame {
         });
     }
 
-    // ── Construction UI ────────────────────────────────────────
+    //  Construction UI
 
     private void initialiserUI() {
         setTitle("Réunion : " + nomGroupe);
@@ -109,7 +100,7 @@ public class GroupAudioCallWindow extends JFrame {
         getContentPane().setBackground(new Color(18, 18, 18));
         setLayout(new BorderLayout(8, 8));
 
-        // ── En-tête ─────────────────────────────────────────────
+
         JPanel entete = new JPanel();
         entete.setLayout(new BoxLayout(entete, BoxLayout.Y_AXIS));
         entete.setBackground(new Color(18, 18, 18));
@@ -161,7 +152,7 @@ public class GroupAudioCallWindow extends JFrame {
 
         add(entete, BorderLayout.NORTH);
 
-        // ── Liste des participants ──────────────────────────────
+        // Liste des participants
         modelParticipants = new DefaultListModel<>();
         listeParticipants = new JList<>(modelParticipants);
         listeParticipants.setBackground(new Color(30, 30, 30));
@@ -186,7 +177,7 @@ public class GroupAudioCallWindow extends JFrame {
 
         add(panneauParticipants, BorderLayout.CENTER);
 
-        // ── Boutons ─────────────────────────────────────────────
+        // Boutons
         add(creerBoutons(), BorderLayout.SOUTH);
 
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -225,7 +216,7 @@ public class GroupAudioCallWindow extends JFrame {
         return p;
     }
 
-    // ── Logique ─────────────────────────────────────────────────
+    // Logique
 
     private void demarrerMedia() {
         // Envoie l'audio vers le groupe (destinataire = nomGroupe, type = GROUP_AUDIO)
@@ -281,7 +272,7 @@ public class GroupAudioCallWindow extends JFrame {
         labelStatut.setText(participants.size() + " participant(s)");
     }
 
-    // ── Renderer participant ────────────────────────────────────
+
 
     private static class ParticipantRenderer extends DefaultListCellRenderer {
         @Override

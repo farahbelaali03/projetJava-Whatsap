@@ -4,17 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-/**
- * Contrôleur de la fenêtre de connexion (login.fxml).
- *
- * Flow :
- *   1. L'utilisateur entre nom + mot de passe (+ optionnellement IP du serveur)
- *   2. Click sur "Se connecter" → ouverture du socket dans un thread
- *   3. Envoi du Message CONNECT
- *   4. À la réception de LOGIN_OK, le Client appelle surConnexionReussie()
- *      qui change la scène vers chat.fxml
- *   5. À la réception de LOGIN_FAIL → surEchecConnexion()
- */
+
 public class LoginController {
 
     @FXML private TextField     champNomUtilisateur;
@@ -79,7 +69,6 @@ public class LoginController {
         t.start();
     }
 
-    /** Appelé par Client quand le serveur a accepté le login. */
     public void surConnexionReussie() {
         Platform.runLater(() -> {
             indicateurChargement.setVisible(false);
@@ -87,7 +76,7 @@ public class LoginController {
         });
     }
 
-    /** Appelé par Client quand le serveur a refusé le login. */
+
     public void surEchecConnexion() {
         Platform.runLater(() -> {
             indicateurChargement.setVisible(false);
