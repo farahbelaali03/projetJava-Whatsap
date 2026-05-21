@@ -85,12 +85,12 @@ public class GroupDAO {
         return new ArrayList<>();
     }
 
-    // ✅ Modifié : supporte le type (MESSAGE, VOICE_MESSAGE, FILE)
+
     public static void sauvegarderMessage(String groupe, String expediteur, String contenu) {
         sauvegarderMessageAvecType(groupe, expediteur, contenu, "MESSAGE");
     }
 
-    // ✅ Nouvelle surcharge avec type explicite
+
     public static void sauvegarderMessageAvecType(String groupe, String expediteur, String contenu, String type) {
         String moi = LocalDatabase.getUtilisateurCourant();
         if (moi == null) return;
@@ -109,7 +109,6 @@ public class GroupDAO {
         }
     }
 
-    // ✅ Modifié : retourne aussi le type pour afficher vocal/fichier correctement
     public static List<String[]> historique(String groupe) {
         String moi = LocalDatabase.getUtilisateurCourant();
         List<String[]> result = new ArrayList<>();
@@ -129,7 +128,7 @@ public class GroupDAO {
                             rs.getString("expediteur"),
                             rs.getString("contenu"),
                             rs.getString("date_envoi"),
-                            type != null ? type : "MESSAGE"  // ✅ index [3] = type
+                            type != null ? type : "MESSAGE"
                     });
                 }
             }

@@ -10,7 +10,7 @@
       prefWidth="1000" prefHeight="640"
       style="-fx-background-color: #FFFFFF;">
 
-    <!-- ═══ SIDEBAR GAUCHE ═══════════════════════════════════════ -->
+    <!-- SIDEBAR GAUCHE  -->
     <VBox prefWidth="320" maxWidth="320"
           style="-fx-background-color: #FFFFFF;">
 
@@ -75,7 +75,7 @@
         </TabPane>
     </VBox>
 
-    <!-- ═══ ZONE PRINCIPALE DROITE ═══════════════════════════════ -->
+    <!--  ZONE PRINCIPALE DROITE -->
     <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: #EFEAE4;">
 
         <!-- En-tête conversation -->
