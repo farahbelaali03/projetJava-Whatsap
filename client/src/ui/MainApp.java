@@ -12,16 +12,10 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.net.URL;
 
-/**
- * Point d'entrée JavaFX du client.
- *
- * Gère le chargement des scènes FXML (login.fxml, chat.fxml) avec
- * un fallback robuste pour trouver les ressources (utile selon comment
- * IntelliJ est configuré).
- */
+
 public class MainApp extends Application {
 
-    /** Client réseau partagé entre les contrôleurs. */
+
     public static final Client client = new Client();
 
     private static ChatController  controleurChat;
@@ -45,7 +39,7 @@ public class MainApp extends Application {
         launch(args);
     }
 
-    /** Change la scène en chargeant un fichier FXML par son nom. */
+
     public static void changerScene(String nomFxml) {
         try {
             URL fxmlUrl = trouverFxml(nomFxml);
@@ -77,12 +71,6 @@ public class MainApp extends Application {
         }
     }
 
-    /**
-     * Cherche le FXML à plusieurs endroits possibles selon la config IntelliJ :
-     *   1. Sur le classpath, racine /ui/fxml/...
-     *   2. Sur le classpath, racine /...
-     *   3. Sur le disque, src/ui/fxml/...
-     */
     private static URL trouverFxml(String nomFxml) throws Exception {
         URL u = MainApp.class.getResource("/ui/fxml/" + nomFxml);
         if (u != null) return u;
