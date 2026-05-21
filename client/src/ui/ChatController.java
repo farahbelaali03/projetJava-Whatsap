@@ -23,23 +23,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-/**
- * Contrôleur principal du chat (V2).
- *
- * Nouveautés :
- *  - Correction bug "contact existe déjà" : vérification + proposition d'utilisateurs en ligne
- *  - Bouton appel audio seul
- *  - Onglet Groupes : créer, ajouter membre, supprimer membre, chat de groupe
- *  - Bouton réunion de groupe
- */
 public class ChatController {
 
-    // ── FXML Sidebar ───────────────────────────────────────────
+
     @FXML private Label      labelNomUtilisateur;
     @FXML private VBox       listeContacts;
     @FXML private TabPane    tabPane;
 
-    // ── FXML Chat privé ────────────────────────────────────────
     @FXML private VBox       zoneMessages;
     @FXML private ScrollPane scrollMessages;
     @FXML private TextField  champMessage;
@@ -50,7 +40,6 @@ public class ChatController {
     @FXML private Label      labelContactActif;
     @FXML private Label      labelStatutContact;
 
-    // ── FXML Groupes ───────────────────────────────────────────
     @FXML private VBox       listeGroupes;
     @FXML private VBox       zoneMessagesGroupe;
     @FXML private ScrollPane scrollMessagesGroupe;
@@ -58,7 +47,6 @@ public class ChatController {
     @FXML private Label      labelGroupeActif;
     @FXML private Label      labelMembresGroupe;
 
-    // ── État ───────────────────────────────────────────────────
     private String contactActif = null;
     private String groupeActif  = null;
 
@@ -71,7 +59,7 @@ public class ChatController {
             "#633806", "#1D6B3A", "#7B2D8B", "#8B4513"
     };
 
-    // ── Initialisation ─────────────────────────────────────────
+
 
     @FXML
     public void initialize() {
@@ -90,7 +78,7 @@ public class ChatController {
                         scrollMessagesGroupe.setVvalue(1.0));
 
             rafraichirListeContacts();
-            // ✅ CORRECTION : try/catch pour ne pas crasher si MySQL absent
+
             try {
                 rafraichirGroupes();
             } catch (Exception e) {
@@ -104,7 +92,7 @@ public class ChatController {
         }
     }
 
-    // ── Actions chat privé ─────────────────────────────────────
+
 
     @FXML
     public void envoyerMessage() {
@@ -159,7 +147,7 @@ public class ChatController {
         MainApp.changerScene("login.fxml");
     }
 
-    // ── Ajout / Suppression de contacts ───────────────────────
+
 
     @FXML
     public void ajouterContact() {
@@ -219,7 +207,7 @@ public class ChatController {
         });
     }
 
-    // ── Actions groupes ────────────────────────────────────────
+
 
     @FXML
     public void creerGroupe() {
@@ -231,7 +219,7 @@ public class ChatController {
             nom = nom.trim();
             if (nom.isEmpty()) return;
 
-            // ✅ CORRECTION : vérifier que MySQL est prêt avant toute opération
+
             if (database.LocalDatabase.getUtilisateurCourant() == null) {
                 afficherInfo("⚠ La base de données n'est pas encore prête.\n"
                         + "Patientez un instant après la connexion puis réessayez.");
@@ -241,10 +229,10 @@ public class ChatController {
             final String nomFinal = nom;
             System.out.println("[Groupe] Création : " + nomFinal);
 
-            // 1. Envoyer GROUP_CREATE au serveur → il répondra GROUP_INFO
+
             MainApp.client.creerGroupe(nomFinal);
 
-            // 2. ✅ CORRECTION : ArrayList mutable (List.of est immutable et plantait)
+
             List<String> membres = new ArrayList<>();
             membres.add(MainApp.client.getNomUtilisateur());
             try {
@@ -255,15 +243,15 @@ public class ChatController {
                         + e.getMessage());
             }
 
-            // 3. Rafraîchir l'UI
+
             rafraichirGroupes();
 
-            // 4. Basculer sur l'onglet Groupes
+
             if (tabPane != null && tabPane.getTabs().size() >= 2) {
                 tabPane.getSelectionModel().select(1);
             }
 
-            // 5. ✅ CORRECTION : pas de vérification MySQL bloquante supplémentaire
+
             afficherInfo("Groupe \"" + nomFinal + "\" en cours de création...\n"
                     + "Il apparaîtra dans la liste dans un instant.\n"
                     + "Clic droit dessus pour ajouter des membres.");
@@ -347,7 +335,7 @@ public class ChatController {
                 MainApp.client.retirerMembreGroupe(nomGroupe, m));
     }
 
-    // ── Méthodes appelées par Client ───────────────────────────
+
 
     public void afficherMessage(Message message) {
         Platform.runLater(() -> {
@@ -388,7 +376,7 @@ public class ChatController {
             String exp    = message.getExpediteur();
             String heure  = heure();
 
-            // ✅ CORRECTION : mettre à jour le label membres en temps réel
+
             if (groupe.equals(groupeActif) && labelMembresGroupe != null) {
                 List<String> membres = GroupDAO.getMembres(groupe);
                 labelMembresGroupe.setText("Membres : " + String.join(", ", membres));
@@ -417,7 +405,7 @@ public class ChatController {
         });
     }
 
-    // ✅ CORRECTION : try/catch pour ne pas crasher l'UI si MySQL absent
+
     public void rafraichirGroupes() {
         Platform.runLater(() -> {
             try {
@@ -516,7 +504,7 @@ public class ChatController {
                 afficherInfo(message.getExpediteur() + " a quitté la réunion."));
     }
 
-    // ── Construction UI ────────────────────────────────────────
+
 
     private void rafraichirListeContacts() {
         listeContacts.getChildren().clear();
@@ -666,13 +654,12 @@ public class ChatController {
         return ligne;
     }
 
-    // ✅ CORRECTION PRINCIPALE : ouvrirContact remet groupeActif=null
-    //    et bascule correctement les zones visible/managed
+
     private void ouvrirContact(String nom) {
         contactActif = nom;
         groupeActif  = null;
 
-        // Afficher les labels du chat privé
+
         labelContactActif.setText(nom);
         actualiserStatutContact();
 
@@ -694,7 +681,7 @@ public class ChatController {
         javafx.scene.Node barreGroupe = champMessageGroupe != null ? champMessageGroupe.getParent() : null;
         if (barreGroupe != null) { barreGroupe.setVisible(false); barreGroupe.setManaged(false); }
 
-        // Charger les messages
+
         zoneMessages.getChildren().clear();
         List<Message> historique = MessageDAO.historiqueAvec(nom);
         for (Message m : historique) {
@@ -716,13 +703,12 @@ public class ChatController {
         rafraichirListeContacts();
     }
 
-    // ✅ CORRECTION PRINCIPALE : ouvrirGroupe rend visibles scrollMessagesGroupe,
-    //    la barre de saisie groupe, et les labels — tout était caché par managed=false
+
     private void ouvrirGroupe(String nom) {
         groupeActif  = nom;
         contactActif = null;
 
-        // Afficher les labels groupe
+
         if (labelGroupeActif != null) {
             labelGroupeActif.setText("Groupe : " + nom);
             labelGroupeActif.setVisible(true);
@@ -734,17 +720,17 @@ public class ChatController {
             labelMembresGroupe.setVisible(true);
             labelMembresGroupe.setManaged(true);
         }
-        // Masquer les labels du chat privé
+
         if (labelContactActif  != null) labelContactActif.setText("");
         if (labelStatutContact != null) labelStatutContact.setText("");
 
-        // Cacher zone privée + sa barre de saisie
+
         scrollMessages.setVisible(false);
         scrollMessages.setManaged(false);
         javafx.scene.Node barrePrivee = champMessage.getParent();
         if (barrePrivee != null) { barrePrivee.setVisible(false); barrePrivee.setManaged(false); }
 
-        // Afficher zone groupe + sa barre de saisie
+
         if (scrollMessagesGroupe != null) {
             scrollMessagesGroupe.setVisible(true);
             scrollMessagesGroupe.setManaged(true);
@@ -752,11 +738,11 @@ public class ChatController {
         javafx.scene.Node barreGroupe = champMessageGroupe != null ? champMessageGroupe.getParent() : null;
         if (barreGroupe != null) { barreGroupe.setVisible(true); barreGroupe.setManaged(true); }
 
-        // Désactiver boutons appel (pas applicables aux groupes)
+
         boutonAppelVideo.setDisable(true);
         boutonAppelAudio.setDisable(true);
 
-        // Charger les messages
+
         if (zoneMessagesGroupe != null) {
             zoneMessagesGroupe.getChildren().clear();
             List<String[]> histo = GroupDAO.historique(nom);
@@ -785,7 +771,6 @@ public class ChatController {
         boutonFichier.setDisable(false);
     }
 
-    // ── Bulles de message ──────────────────────────────────────
 
     private void ajouterBubble(VBox zone, String contenu, boolean sortant, String exp, String heure) {
         String texte = (heure.isEmpty() ? "" : "[" + heure + "] ")
@@ -826,7 +811,7 @@ public class ChatController {
         zone.getChildren().add(r);
     }
 
-    // ── Ouverture fenêtres appel ───────────────────────────────
+
 
     private void ouvrirFenetreVideoCall(String interlocuteur) {
         System.out.println("[Appel] ouverture fenêtre VIDEO avec " + interlocuteur);
@@ -856,7 +841,7 @@ public class ChatController {
         });
     }
 
-    // ── Utilitaires ────────────────────────────────────────────
+
 
     private Label creerAvatar(String nom) {
         Label avatar = new Label(initiales(nom));
